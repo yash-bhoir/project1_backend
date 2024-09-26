@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  email        String     @unique
+  username     String
+  password     String
+  refreshToken String?
+  isFilled     Boolean
+  createdAt    DateTime   @default(now()) 
+}
+
+model UserInfo {
+  id                   String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId               String
+  firstName            String
+  middleName           String?
+  lastName             String
+  bloodType            String 
+  Birth_Date           DateTime
+  Gender               String
+  Phone_Number         String
+  Street_Address       String
+  Street_Address_Line_2 String?
+  City                 String
+  State                String
+  Postal_Code          String
+  Weight               Float
+  donated_previously   Boolean
+  Last_donation        DateTime?
+  Diseases             String?
+}
+
+model RequestBlood {
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId              String   
+  bloodTypeId         String    
+  quantity            Int
+  request_date        DateTime
+  required_by         DateTime
+  status              String
+  delivery_address    String
+  contact_number      String
+  reason_for_request  String
+  hospital_name       String
+  urgent              Boolean ?
+  isAccepted          Boolean ?
+  isQrSent            Boolean ?
+  isMailSent          Boolean ?
+}
+
+model QRCode {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   
+  requestId String   
+  qrCodeUrl String   
+  createdAt DateTime @default(now()) 
+}

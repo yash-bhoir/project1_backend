@@ -1,0 +1,49 @@
+import { asyncHandler } from '../utils/asyncHandler.js';
+import { ApiResponse } from "../utils/ApiResponse.js";
+import { ApiError } from '../utils/ApiError.js';
+import prisma from '../../prisma/index.js';
+
+const userRequest = asyncHandler(async (req, res) => {
+  const {
+    userId,
+    bloodTypeId,     
+    quantity,
+    request_date,
+    required_by,
+    status,
+    delivery_address,
+    contact_number,
+    reason_for_request,
+    hospital_name,
+    urgent
+  } = req.body;
+
+  if ([userId, bloodTypeId, quantity, request_date, required_by, status, delivery_address, contact_number, reason_for_request, hospital_name].some((field) => field === undefined || field === null)) {
+    throw new ApiError(400, 'All fields except urgent are required');
+  }
+
+  try {
+    const newRequest = await prisma.requestBlood.create({
+      data: {
+        userId,
+        bloodTypeId,
+        quantity,
+        request_date: new Date(request_date),  
+        required_by: new Date(required_by),   
+        status,
+        delivery_address,
+        contact_number,
+        reason_for_request,
+        hospital_name,
+        urgent: urgent ?? false,  
+      }
+    });
+
+    return res.status(201).json(new ApiResponse(201, newRequest, "Blood request created successfully"));
+  } catch (error) {
+    console.error("Error creating blood request:", error);
+    throw new ApiError(500, "An error occurred while creating the blood request.");
+  }
+});
+
+export {userRequest};
