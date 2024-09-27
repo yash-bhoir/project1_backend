@@ -1,21 +1,25 @@
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { sendEmail } from '../utils/emailService.js';
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { ApiError } from '../utils/ApiError.js';
 
 
-const sendEmailController = asyncHandler(async (req, res) => {
-  const { to, subject, htmlContent } = req.body;
+const sendEmailController = async (to, subject,htmlContent) => {
 
+  console.log("all fields :: ",to, subject,htmlContent )
+  
   if (!to || !subject || !htmlContent) {
-    return res.status(400).json({ message: 'All fields (to, subject, htmlContent) are required' });
+    throw new ApiError(400, "All fields (to, subject, htmlContent) are required.");
   }
 
   try {
     await sendEmail(to, subject, htmlContent);
-    res.status(200).json(new ApiResponse(201, {}, "Email sent successfully"))
+    return { status: 200, message: "Email sent successfully." };
   } catch (error) {
-    res.status(500).json(new ApiResponse(500, {}, "Error sending email"))
+    console.error('Error sending email:', error); 
+
+    throw new ApiError(500, "Error sending email.");
   }
-});
+};
 
 export { sendEmailController };

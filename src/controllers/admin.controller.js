@@ -1,20 +1,18 @@
-import { asyncHandler } from '../utils/asyncHandler.js';
-import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from '../utils/ApiError.js';
 import prisma from '../../prisma/index.js';
+import { ApiResponse } from '../utils/ApiResponse.js';
 import { generateqrcode } from '../controllers/qr.controller.js'; 
+import { asyncHandler } from '../utils/asyncHandler.js'; 
 
-const acceptRequest = asyncHandler(async (req, res) => {   
-    const { userId, requestId ,isAccepted} = req.body;
+const acceptRequest = asyncHandler(async (req, res) => { 
+    const { userId, requestId, isAccepted } = req.body;
 
     if (!userId || !requestId) {
-        throw new ApiError(400, 'Both requestId, userId, and isAccepted fields are required.');
+        throw new ApiError(400, 'Both requestId and userId fields are required.');
     }
 
-    const request = await prisma.requestBlood.findUnique({
-        where: {
-            id: requestId 
-        }
+    const request = await prisma.requestBlood.findFirst({
+        where: { id: requestId },
     });
 
     if (!request) {
@@ -30,37 +28,25 @@ const acceptRequest = asyncHandler(async (req, res) => {
     }
 
     await prisma.requestBlood.update({
-        where: {
-            id: requestId 
-        },
-        data: {
-            isAccepted: isAccepted 
-        }
+        where: { id: requestId },
+        data: { isAccepted: isAccepted },
     });
 
-    try {
-        const qrcodeStatus = await prisma.requestBlood.findFirst({
-            where: {
-                id: requestId 
-            }
-        });
-        
-        if(qrcodeStatus.isQrSent){
-            throw new ApiError(400, 'Qr code already sent');
-        }
+    const qrcodeStatus = await prisma.requestBlood.findFirst({
+        where: { id: requestId },
+    });
 
-            const getqrcodeResponse = await generateqrcode(userId, requestId);
+    if (qrcodeStatus.isQrSent) {
+        throw new ApiError(400, 'QR code already sent');
+    }
 
-            if (getqrcodeResponse.status === 200) {
-                return res.status(200).json(new ApiResponse(200, { message: "Request accepted and QR code generated. Email sent successfully." }));
-            } else {
-                return res.status(500).json(new ApiResponse(500, { message: "Request accepted, but failed to generate QR code or send email." }));
-            }
+    // Call generateqrcode with separate arguments
+    const getqrcodeResponse = await generateqrcode(requestId, userId);
 
-         
-    } catch (error) {
-        console.error("Error generating QR code:", error);
-        return res.status(500).json(new ApiResponse(500, { message: "Request accepted, but an error occurred during QR code generation." }));
+    if (getqrcodeResponse.status === 200) {
+        return res.status(200).json(new ApiResponse(200, { message: "Request accepted and QR code generated. Email sent successfully." }));
+    } else {
+        return res.status(500).json(new ApiResponse(500, { message: "Request accepted, but failed to generate QR code or send email." }));
     }
 });
 

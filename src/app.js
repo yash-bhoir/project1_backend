@@ -4,9 +4,9 @@ import cors from 'cors';
 import userRoute from './routes/user.router.js';
 import emailRoute from './routes/email.router.js';
 import UserInfo from './routes/userInfo.router.js';
-import bloodrequest from "./routes/request.router.js"
-import acceptRequest from "./routes/admin.router.js"
-
+import bloodrequest from "./routes/request.router.js";
+import acceptRequest from "./routes/admin.router.js";
+import test from "./routes/test.router.js";
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -35,6 +35,15 @@ app.use('/api/v1/email', emailRoute);
 app.use('/api/v1/UserInfo', UserInfo);
 app.use('/api/v1/bloodrequest', bloodrequest);
 app.use('/api/v1/acceptRequest', acceptRequest);
+app.use('/api/v1/test', test);
 
+// Global error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(err.status || 500).json({
+        status: 'error',
+        message: err.message || 'Internal Server Error',
+    });
+});
 
 export default app;

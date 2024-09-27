@@ -13,8 +13,8 @@ model User {
   username     String
   password     String
   refreshToken String?
-  isFilled     Boolean
-  createdAt    DateTime   @default(now()) 
+  isFilled     Boolean ?
+  createdAt    DateTime ?  @default(now()) 
 }
 
 model UserInfo {
