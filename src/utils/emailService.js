@@ -1,21 +1,31 @@
 import nodemailer from 'nodemailer';
 
-// Create a transporter using your email service configuration
 const transporter = nodemailer.createTransport({
-  service: 'gmail', // Use 'gmail' for Gmail service
+  host: 'smtp.gmail.com',  
+  port: 587,               
+  secure: false,           
   auth: {
-    user: process.env.EMAIL_USER, // Your email address
-    pass: process.env.EMAIL_PASS, // Your app password or email password
+      user: 'yash51217@gmail.com',
+      pass: 'jisj nvwy rpon wdzf'
   },
+  tls: {
+    rejectUnauthorized: false  
+  }
 });
 
-// Function to send an email
-const sendEmail = async (to, subject, htmlContent) => {
+const sendEmail = async (to, subject, htmlContent, qrCodeBuffer) => {
   const mailOptions = {
-    from: process.env.EMAIL_USER, // Use your email address
-    to, // Recipient email
-    subject, // Email subject
-    html: htmlContent, // HTML content
+    from: 'yash51217@gmail.com', 
+    to, 
+    subject, 
+    html: htmlContent,
+    attachments: [
+      {
+        filename: 'qrcode.png',
+        content: qrCodeBuffer,
+        cid: 'qrcode'  // Content-ID for referencing the QR code in the HTML body
+      }
+    ]
   };
 
   try {
@@ -32,6 +42,7 @@ export { sendEmail };
 
 
 
+
 // import { Resend } from 'resend';
 
 // const resend = new Resend(process.env.RESEND_API_KEY);
@@ -41,7 +52,7 @@ export { sendEmail };
 //   console.log("this is all data to send ::" , to, subject, htmlContent)
 //   try {
 //     const email = await resend.emails.send({
-//       from: 'yash51217@gmail.com', 
+//       from: 'yash.bhoir@somaiya.edu', 
 //       to: [to], 
 //       subject,
 //       html: htmlContent,

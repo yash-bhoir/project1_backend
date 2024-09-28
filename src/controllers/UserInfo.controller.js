@@ -3,33 +3,6 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from '../utils/ApiError.js';
 import prisma from '../../prisma/index.js';
 
-const HTTP_STATUS = {
-  OK: 200,
-  CREATED: 201,
-  BAD_REQUEST: 400,
-  NOT_FOUND: 404,
-  CONFLICT: 409,
-  INTERNAL_SERVER_ERROR: 500,
-};
-
-// const checkFormFilled = asyncHandler(async (req, res) => {
-//   const { userId } = req.body;
-
-//   if (!userId) {
-//     throw new ApiError(HTTP_STATUS.BAD_REQUEST, "No User Found");
-//   }
-
-//   const user = await prisma.user.findUnique({
-//     where: { id: userId }
-//   });
-
-//   if (!user) {
-//     throw new ApiError(HTTP_STATUS.CONFLICT, "User not found");
-//   }
-  
-//   res.status(HTTP_STATUS.OK).json(new ApiResponse(HTTP_STATUS.OK, user, 'User found. The form is available to fill.'));
-// });
-
 
 const addUserInfo = asyncHandler(async (req, res) => {
   const {

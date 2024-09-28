@@ -40,8 +40,7 @@ const acceptRequest = asyncHandler(async (req, res) => {
         throw new ApiError(400, 'QR code already sent');
     }
 
-    // Call generateqrcode with separate arguments
-    const getqrcodeResponse = await generateqrcode(requestId, userId);
+     const getqrcodeResponse = await generateqrcode(requestId, userId);
 
     if (getqrcodeResponse.status === 200) {
         return res.status(200).json(new ApiResponse(200, { message: "Request accepted and QR code generated. Email sent successfully." }));
@@ -49,5 +48,36 @@ const acceptRequest = asyncHandler(async (req, res) => {
         return res.status(500).json(new ApiResponse(500, { message: "Request accepted, but failed to generate QR code or send email." }));
     }
 });
+const checkQrAuth = asyncHandler(async (req, res) => {
+    const { requestId, userId } = req.body;
 
-export { acceptRequest };
+    const checkAuth = await prisma.RequestBlood.findFirst({ where: { id: requestId } });
+    
+    if (!checkAuth) {
+        throw new ApiError(404, "Request not found.");
+    }
+
+    if (checkAuth.userId !== userId) {
+        throw new ApiError(400, "User ID does not match.");
+    }
+
+    if (checkAuth.isAproved) {
+        throw new ApiError(400, "Request is already approved.");
+    }
+
+    // Approve the request
+    try {
+        await prisma.requestBlood.update({
+            where: { id: requestId },
+            data: { isAproved: true }
+        });
+
+        // Send success response
+        res.status(200).json({ status: 200, message: "User authenticated and request approved successfully." });
+    } catch (error) {
+        console.error("Error approving request:", error);
+        throw new ApiError(500, "Failed to authenticate user and approve request.");
+    }
+});
+    
+export { acceptRequest, checkQrAuth };

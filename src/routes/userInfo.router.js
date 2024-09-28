@@ -5,12 +5,12 @@ import verifyJWT from "../middlewares/auth.middleware.js"
 
 const router = Router();
 
-router.route("/user-info").post(addUserInfo);
+router.route("/user-info").post(verifyJWT,addUserInfo);
 
 // router.route("/form-check").post(checkFormFilled);
 
-router.route("/user-info/edit").post(updateUserInfo);
+router.route("/user-info/edit").post(verifyJWT,updateUserInfo);
 
-router.route("/user-info/:userId").get(getUserInfoByUserId); 
+router.route("/user-info/:userId").get(verifyJWT,getUserInfoByUserId); 
 
 export default router;
