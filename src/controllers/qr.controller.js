@@ -62,8 +62,4 @@ const generateqrcode = async (requestId, userId) => {
     }
 };
 
-
-  
-
-
 export { generateqrcode };

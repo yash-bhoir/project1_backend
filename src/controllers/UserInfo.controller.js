@@ -11,29 +11,46 @@ const addUserInfo = asyncHandler(async (req, res) => {
     middleName,
     lastName,
     bloodType,
-    birth_Date,
+    birthDate,
     gender,
-    phone_Number,
-    street_Address,
-    street_Address_Line_2,
+    phoneNumber,
+    streetAddress,
+    streetAddressLine2,
     city,
     state,
-    postal_Code,
-    Weight,
-    donated_previously,
-    Last_donation,
-    Diseases,
+    postalCode,
+    weight, // Keep this as a string for now
+    donatedPreviously,
+    lastDonation,
+    diseases,
   } = req.body;
 
-  if (
-    [userId, firstName, lastName, bloodType, birth_Date, gender, phone_Number, street_Address, city, state, postal_Code, Weight, Diseases]
-      .some(field => field == null || (typeof field === 'string' && field.trim() === ''))
-  ) {
+  console.log(req.body); // Check the incoming data
+
+  const requiredFields = [
+    userId,
+    firstName,
+    lastName,
+    bloodType,
+    birthDate,
+    gender,
+    phoneNumber,
+    streetAddress,
+    city,
+    state,
+    postalCode,
+    weight,
+    diseases,
+  ];
+
+  // Check if any required fields are empty or null
+  const isAnyFieldEmpty = requiredFields.some(field => !field || (typeof field === 'string' && field.trim() === ''));
+
+  if (isAnyFieldEmpty) {
     throw new ApiError(400, 'All fields are required');
   }
 
   try {
-  
     const newUserInfo = await prisma.UserInfo.create({
       data: {
         userId,
@@ -41,26 +58,36 @@ const addUserInfo = asyncHandler(async (req, res) => {
         middleName,
         lastName,
         bloodType,
-        Birth_Date: new Date(birth_Date),
+        Birth_Date: new Date(birthDate),
         Gender: gender,
-        Phone_Number: phone_Number,
-        Street_Address: street_Address,
-        Street_Address_Line_2: street_Address_Line_2,
+        Phone_Number: phoneNumber,
+        Street_Address: streetAddress,
+        Street_Address_Line_2: streetAddressLine2,
         City: city,
         State: state,
-        Postal_Code: postal_Code,
-        Weight,
-        donated_previously,
-        Last_donation: Last_donation ? new Date(Last_donation) : null,
-        Diseases,
+        Postal_Code: postalCode,
+        Weight: parseFloat(weight), // Convert weight to Float
+        donated_previously: donatedPreviously,
+        Last_donation: lastDonation ? new Date(lastDonation) : null,
+        Diseases: diseases,
       }
     });
+    if(newUserInfo) {
+      await prisma.user.update({
+        where: { id: userId },
+        data: { isFilled: true },
+      });
+    }
+
 
     return res.status(201).json(new ApiResponse(201, newUserInfo, "User information added successfully"));
   } catch (error) {
+    console.error(error); // Log the error for debugging
     throw new ApiError(500, "An error occurred while adding the user information.");
   }
 });
+
+
 
 const updateUserInfo = asyncHandler(async (req, res) => {
   const {

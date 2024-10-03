@@ -214,7 +214,8 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
 const getUserFormStatus = asyncHandler(async(req, res) => {
 
-const {userId}= req.body
+const {userId}= req.body;
+console.log("this is user id",userId)
 
 if(!userId){
   throw new ApiError(401,  "UserId not found");
