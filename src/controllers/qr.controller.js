@@ -2,6 +2,7 @@ import { sendEmailController } from "./email.controller.js";
 import { ApiError } from '../utils/ApiError.js';
 import QRCode from "qrcode";
 import prisma from '../../prisma/index.js';
+import { asyncHandler } from "../utils/asyncHandler.js";
 
 const generateqrcode = async (requestId, userId) => { 
     if (!requestId || !userId) {
@@ -61,6 +62,8 @@ const generateqrcode = async (requestId, userId) => {
     }
 };
 
+
+  
 
 
 export { generateqrcode };

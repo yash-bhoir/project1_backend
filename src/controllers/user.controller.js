@@ -212,5 +212,27 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   }
 });
 
-export { registerUser, loginUser, logoutUser, generateAccessAndRefreshTokens, refreshAccessToken };
+const getUserFormStatus = asyncHandler(async(req, res) => {
+
+const {userId}= req.body
+
+if(!userId){
+  throw new ApiError(401,  "UserId not found");
+} 
+const getUser = await prisma.user.findFirst({
+  where : { id: userId },
+  select: {
+    isFilled: true
+  }
+})
+
+if(!getUser){
+  throw new ApiError(401,  "Something went wrong while getting form status");
+}
+
+return  res.status(201).json(new ApiResponse(201, getUser, 'Status found'));
+
+})
+
+export { registerUser, loginUser, logoutUser, generateAccessAndRefreshTokens, refreshAccessToken, getUserFormStatus };
 

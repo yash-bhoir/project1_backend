@@ -46,4 +46,27 @@ const userRequest = asyncHandler(async (req, res) => {
   }
 });
 
-export {userRequest};
+const getRequestStatus = asyncHandler(async (req, res) => {
+  const { userId } = req.body;
+
+  if (!userId) {
+    throw new ApiError(400, "userId is required.");
+  }
+
+  const requests = await prisma.requestBlood.findMany({
+    where: {
+      userId: userId, // or just userId, ES6 shorthand
+    },
+  });
+
+  if(!requests){
+      throw new ApiError(400, "No Request Found.");
+  }
+
+  res.status(200).json({
+    success: true,
+    data: requests,
+  });
+});
+
+export {userRequest, getRequestStatus};
