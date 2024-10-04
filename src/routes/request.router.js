@@ -7,8 +7,7 @@ const router = Router();
 
 router.route("/blood-request").post(verifyJWT,userRequest); 
 router.route("/requestStatus").post(verifyJWT,getRequestStatus);  
-router.route("/getAllRequest").post(verifyJWT,getAllRequest);   
-
+router.route("/getAllRequest").get(verifyJWT,getAllRequest);
 
 
 export default router;
