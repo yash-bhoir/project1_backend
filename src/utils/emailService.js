@@ -1,40 +1,45 @@
 import nodemailer from 'nodemailer';
 
 const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',  
-  port: 587,               
-  secure: false,           
+  host: 'smtp.gmail.com',
+  port: 587,
+  secure: false,
   auth: {
-      user: 'yash51217@gmail.com',
-      pass: 'jisj nvwy rpon wdzf'
+    user: 'yash51217@gmail.com',
+    pass: 'jisj nvwy rpon wdzf',  // Ensure you're using environment variables for sensitive data in production.
   },
   tls: {
-    rejectUnauthorized: false  
+    rejectUnauthorized: false
   }
 });
 
-const sendEmail = async (to, subject, htmlContent, qrCodeBuffer) => {
+const sendEmail = async (to, subject, htmlContent, qrCodeBuffer = null) => {
+  // Set up base mail options
   const mailOptions = {
     from: 'yash51217@gmail.com', 
     to, 
     subject, 
     html: htmlContent,
-    attachments: [
+  };
+
+  // If qrCodeBuffer is provided, add it to the attachments
+  if (qrCodeBuffer) {
+    mailOptions.attachments = [
       {
         filename: 'qrcode.png',
         content: qrCodeBuffer,
         cid: 'qrcode'  // Content-ID for referencing the QR code in the HTML body
       }
-    ]
-  };
+    ];
+  }
 
   try {
     const info = await transporter.sendMail(mailOptions);
     console.log('Email sent successfully:', info);
-    return info; 
+    return info;
   } catch (error) {
     console.error('Error sending email:', error);
-    throw error; 
+    throw error;
   }
 };
 
