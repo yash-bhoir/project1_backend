@@ -11,6 +11,6 @@ router.route("/user-info").post(verifyJWT,addUserInfo);
 
 router.route("/user-info/edit").post(verifyJWT,updateUserInfo);
 
-router.route("/user-info/:userId").get(verifyJWT,getUserInfoByUserId); 
+router.route("/user-info/getInfo").post(verifyJWT,getUserInfoByUserId); 
 
 export default router;

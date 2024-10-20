@@ -46,7 +46,7 @@ model RequestBlood {
   bloodTypeId         String    
   quantity            Int
   request_date        DateTime
-  required_by         DateTime
+  required_by         String
   status              String
   delivery_address    String
   contact_number      String

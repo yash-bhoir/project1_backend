@@ -91,28 +91,28 @@ const addUserInfo = asyncHandler(async (req, res) => {
 
 const updateUserInfo = asyncHandler(async (req, res) => {
   const {
-    id, 
-    userId,
+    id, // Assuming you are passing the ID instead of userId
     firstName,
     middleName,
     lastName,
     bloodType,
-    birth_Date,
+    birthDate,
     gender,
-    phone_Number,
-    street_Address,
-    street_Address_Line_2,
+    phoneNumber,
+    streetAddress,
+    streetAddressLine2,
     city,
     state,
-    postal_Code,
-    Weight,
-    donated_previously,
-    Last_donation,
-    Diseases,
+    postalCode,
+    weight, // Keep this as a string for now
+    donatedPreviously,
+    lastDonation,
+    diseases,
   } = req.body;
 
+  console.log("this is request body for update", req.body);
   if (
-    [id, userId, firstName, lastName, bloodType, birth_Date, gender, phone_Number, street_Address, city, state, postal_Code, Weight, Diseases]
+    [id, firstName, lastName, bloodType, birthDate, gender, phoneNumber, streetAddress, city, state, postalCode, weight, diseases]
       .some(field => field == null || (typeof field === 'string' && field.trim() === ''))
   ) {
     throw new ApiError(400, 'All fields are required');
@@ -120,25 +120,24 @@ const updateUserInfo = asyncHandler(async (req, res) => {
 
   try {
     const updatedUserInfo = await prisma.UserInfo.update({
-      where: { id }, 
+      where: { id }, // Use id instead of userId
       data: {
-        userId,
         firstName,
         middleName,
         lastName,
         bloodType,
-        Birth_Date: new Date(birth_Date), 
+        Birth_Date: new Date(birthDate),
         Gender: gender,
-        Phone_Number: phone_Number,
-        Street_Address: street_Address,
-        Street_Address_Line_2: street_Address_Line_2,
+        Phone_Number: phoneNumber,
+        Street_Address: streetAddress,
+        Street_Address_Line_2: streetAddressLine2,
         City: city,
         State: state,
-        Postal_Code: postal_Code,
-        Weight,
-        donated_previously,
-        Last_donation: Last_donation ? new Date(Last_donation) : null, 
-        Diseases,
+        Postal_Code: postalCode,
+        Weight: parseFloat(weight),
+        donated_previously: donatedPreviously,
+        Last_donation: lastDonation ? new Date(lastDonation) : null,
+        Diseases: diseases,
       },
     });
 
@@ -149,6 +148,8 @@ const updateUserInfo = asyncHandler(async (req, res) => {
   }
 });
 
+
+
 const getUserInfoByUserId = asyncHandler(async (req, res) => {
   const { userId } = req.body;
 
@@ -157,7 +158,7 @@ const getUserInfoByUserId = asyncHandler(async (req, res) => {
   }
 
   try {
-    const userInfo = await prisma.UserInfo.findUnique({
+    const userInfo = await prisma.UserInfo.findFirst({
       where: {
         userId: userId, 
       },
@@ -173,5 +174,6 @@ const getUserInfoByUserId = asyncHandler(async (req, res) => {
     throw new ApiError(500, "An error occurred while fetching the user information.");
   }
 });
+
 
 export { addUserInfo, updateUserInfo, getUserInfoByUserId };

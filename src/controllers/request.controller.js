@@ -10,7 +10,6 @@ const userRequest = asyncHandler(async (req, res) => {
     quantity,
     request_date,
     required_by,
-    status,
     delivery_address,
     contact_number,
     reason_for_request,
@@ -18,7 +17,7 @@ const userRequest = asyncHandler(async (req, res) => {
     urgent
   } = req.body;
 
-  if ([userId, bloodTypeId, quantity, request_date, required_by, status, delivery_address, contact_number, reason_for_request, hospital_name].some((field) => field === undefined || field === null)) {
+  if ([userId, bloodTypeId, quantity, request_date, required_by, delivery_address, contact_number, reason_for_request, hospital_name].some((field) => field === undefined || field === null)) {
     throw new ApiError(400, 'All fields except urgent are required');
   }
 
@@ -29,8 +28,8 @@ const userRequest = asyncHandler(async (req, res) => {
         bloodTypeId,
         quantity,
         request_date: new Date(request_date),  
-        required_by: new Date(required_by),   
-        status,
+        required_by,  
+        status : "Pending",
         delivery_address,
         contact_number,
         reason_for_request,
@@ -68,6 +67,7 @@ const getRequestStatus = asyncHandler(async (req, res) => {
     data: requests,
   });
 });
+
 const getAllRequest = asyncHandler(async (req, res) => {
   try {
     const requests = await prisma.requestBlood.findMany();
