@@ -72,12 +72,10 @@ const getAllRequest = asyncHandler(async (req, res) => {
   try {
     const requests = await prisma.requestBlood.findMany();
     
-    // Check if requests were found
     if (!requests || requests.length === 0) {
       return res.status(404).json({ message: "No requests found." });
     }
 
-    // Send the requests as a response
     return res.status(200).json({ data: requests });
   } catch (error) {
     console.error("Error fetching requests:", error);
