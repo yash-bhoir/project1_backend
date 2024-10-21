@@ -62,6 +62,7 @@ const registerUser = asyncHandler(async (req, res) => {
       username: username.toLowerCase(),
       email,
       password: hashedPassword,
+      role : "User"
     },
   });
 
@@ -124,6 +125,7 @@ const loginUser = asyncHandler(async (req, res) => {
     },
   });
 
+  console.log(" this is logedin user info ", loggedInUser)
   const options = {
     httpOnly: true,
     secure: true,
